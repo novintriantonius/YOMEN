@@ -23,6 +23,7 @@
     "typescript": "^5.7.3",
     "undetected-browser": "^2.0.4",
     "unzipper": "^0.12.3",
+    "webdriver-manager": "^12.1.9",
     "zip-lib": "^0.7.3"
   },
   "name": "yt-commenter",

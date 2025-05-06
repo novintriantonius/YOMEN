@@ -1,36 +1,48 @@
 import fs from "fs";
 import path from "path";
+import os from "os";
 import UndetectableBrowser from "undetected-browser";
 import puppeteer, { Browser, Page } from "puppeteer";
 import { setEnv } from "#config/index";
 import { mkdirp } from 'mkdirp';
+import { DriverManager } from "../utils/driverManager";
+
 export class LaunchBrowser {
     public browser: Browser | null;
     public page: Page | null;
     public username: string;
+    private driverManager: DriverManager;
 
     constructor(username: string) {
         this.username = username;
         this.browser = null;
         this.page = null;
+        this.driverManager = new DriverManager();
     }
 
     /**
      * Initialize the browser with undetectable settings and a specific user session.
      */
     async init(): Promise<void> {
-        const driverPath = path.resolve("driver");
         const sessionDir = path.resolve(`session/${this.username}`);
         await mkdirp(sessionDir);
   
-        if (!fs.existsSync(driverPath) || fs.readdirSync(driverPath).length === 0) {
-            throw new Error("The 'driver' folder is empty or does not exist. Please ensure the necessary files are present.");
+        // Get Chrome driver path using the driver manager
+        const chromeDriverPath = await this.driverManager.getChromeDriverPath();
+        
+        if (!chromeDriverPath) {
+            throw new Error("Failed to get Chrome driver. Please ensure webdriver-manager is installed.");
         }
 
+        // Use the correct path separator based on platform
+        const pathSeparator = os.platform() === 'win32' ? ';' : ':';
+        
         const UndetectableBMS = new UndetectableBrowser(
             await puppeteer.launch({ 
                 headless: false,
-                executablePath: path.join(driverPath, "chrome.exe"),
+                executablePath: os.platform() === 'win32' ? 
+                    path.join(process.cwd(), 'node_modules', 'puppeteer', '.local-chromium', 'win64-116.0.5845.96', 'chrome-win', 'chrome.exe') : 
+                    undefined, // Use default Chrome on non-Windows platforms
                 userDataDir: `session/${this.username}`,
                 args: [
                     '--no-sandbox',
@@ -50,6 +62,11 @@ export class LaunchBrowser {
                     '--no-zygote-forced-for-chrome',
                     '--disable-web-security',
                 ],
+                env: {
+                    ...process.env,
+                    CHROME_DRIVER_PATH: chromeDriverPath,
+                    PATH: `${path.dirname(chromeDriverPath)}${pathSeparator}${process.env.PATH || ''}`
+                }
             })
         );
 
