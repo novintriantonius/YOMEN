@@ -13,7 +13,9 @@ Youtube Bot Auto Commenter Using Puppeter and NodeJS
 
 - Node 18+
 
-#  Installation ```bash
+#  Installation 
+
+```bash
 $ git clone https://github.com/novintriantonius/YOMEN
 $ cd YOMEN
 $ npm install
