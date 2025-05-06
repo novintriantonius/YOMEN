@@ -186,10 +186,16 @@ export default class YOMEN {
 
 
   async directComment(videoLink: string, comments) {
+    if (comments.length < 5) {
+      comments = "Halo kak mau beli 𝐅𝐨𝐈𝐈𝐨𝐰𝐞𝐫𝐬 𝗦𝗵𝗼𝗽𝗲𝗲, 𝗧𝗶𝗸𝗧𝗼𝗸, 𝗜𝗻𝘀𝘁𝗮𝗴𝗿𝗮𝗺?\n\nDengan banyaknya 𝐅𝐨𝐈𝐈𝐨𝐰𝐞𝐫𝐬, Bisa Meningkatkan Kepercayaan Pembeli Dan Penjualan Di Toko Kakak\n\nDetailnya bisa langsung ke 𝗪𝗔: \n𝟬𝟴𝟵𝟱 𝟯𝟮𝟲𝟰 𝟬𝟬𝟬𝟭𝟬\natau kunjungi:\n𝘄𝗮.𝗺𝗲/𝟲𝟮𝟴𝟵𝟱𝟯𝟮𝟲𝟰𝟬𝟬𝟬𝟭𝟬";
+    }
+    
     console.log(comments);
+    
+    Logger.info("Scrolling to the comment input box...");
     await this.page.waitForSelector("#simple-box", {
       visible: true,
-      timeout: randomNumber(5000, 10000),
+      timeout: await randomNumber(5000, 10000),
     });
     await this.page.evaluate(() => {
       const commentBox = document.querySelector("#simple-box");
@@ -197,13 +203,28 @@ export default class YOMEN {
         commentBox.scrollIntoView({ behavior: "smooth", block: "center" });
       }
     });
- 
+
+    Logger.info("Clicking on the comment box...");
+    await this.page.waitForSelector("#placeholder-area", {
+      visible: true,
+      timeout: await randomNumber(5000, 10000),
+    });
+    await this.page.evaluate(() => {
+      const placeholderArea = document.querySelector("#placeholder-area");
+      if (placeholderArea) {
+        placeholderArea.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    });
+    await this.page.click("#placeholder-area");
+
+    Logger.info("Waiting for the text input box to be ready...");
     await this.page.waitForSelector("#contenteditable-root", {
       visible: true,
-      timeout: randomNumber(5000, 10000),
+      timeout: await randomNumber(5000, 10000),
     });
-    await this.page.click("#contenteditable-root");
-    await this.page.type("#contenteditable-root",comments );
+
+    Logger.info("Typing the selected random comment...");
+    await this.page.type("#contenteditable-root", comments);
 
     Logger.info("Submitting the comment...");
     await this.page.keyboard.press("Enter");
@@ -215,7 +236,7 @@ export default class YOMEN {
     await CommentDB.create({
       username: getEnv("USERNAME"),
       video_url: videoLink,
-      comment_status: "failed",
+      comment_status: "success",
       comment: comments,
     })
   }
