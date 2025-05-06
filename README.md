@@ -12,12 +12,9 @@ Youtube Bot Auto Commenter Using Puppeter and NodeJS
 # Requerements
 
 - Node 18+
-- Windows ( Currently this only support windows for now)
 
-#  Installation 
-
-```bash
-$ git clone https://github.com/tegal1337/YOMEN
+#  Installation ```bash
+$ git clone https://github.com/novintriantonius/YOMEN
 $ cd YOMEN
 $ npm install
 $ npm start
@@ -28,11 +25,12 @@ make `.env` like .env.example and fill the username and password google
 
 
 # FAQ
+## For Windows:
+- Make sure you open Command Prompt with Administrator Privileges
+- Or simply double-click `RUN.bat` for Windows
 
-- Fix Error Folder Session is missing
-- Make sure you open Command Prompt with Administrator Privilidge
-
-- Or simply double Click `RUN.bat`
+## For CLI users:
+- Run `run.sh` in the terminal
 
 # Feature
 
@@ -71,14 +69,3 @@ make `.env` like .env.example and fill the username and password google
 
 - 🛠️ Simple Terminal-Based Interface
 
-
-you can buy in here : https://p-store.net/insideheartz/jual-script-youtube-auto-comment-full-fitur-bot-comment-Lvm5yH
-
-# Request Feature?
-
-- you can contact me through telegram { @imtaqin}
-
-           
-
-# Author
-- @taqin (https://imtaqin.id)
