@@ -18,8 +18,7 @@ export default class YOMEN {
     this.page = pages;
   }
 
-  async searchKeyword(param: searchParam, sortBy: string = "relevance"): Promise<string[] | any> {
-    const keyword = param;
+  async searchKeyword(keyword: string, sortBy: string = "relevance"): Promise<string[] | any> {
     console.log(keyword);
     if (typeof keyword !== "string") {
       Logger.error("Invalid keyword type. Expected a string.");

@@ -21,8 +21,21 @@ async function getSearchPreferences() {
             message: '🔍 How would you like to discover videos?',
             choices: [
                 { name: '🔎 Search by keyword', value: 'keyword' },
-                { name: '🔥 Browse trending page', value: 'trending' }
+                { name: '🔥 Browse trending page', value: 'trending' },
+                { name: '📄 Read from CSV file', value: 'csv' }
             ]
+        },
+        {
+            type: 'input',
+            name: 'csvPath',
+            message: '📄 Enter the path to your CSV file:',
+            when: (answers) => answers.searchType === 'csv',
+            validate: (input: string) => {
+                if (!input.trim()) return '❌ CSV path cannot be empty';
+                if (!fs.existsSync(input)) return '❌ CSV file does not exist';
+                if (!input.endsWith('.csv')) return '❌ File must be a CSV file';
+                return true;
+            }
         },
         {
             type: 'input',
@@ -91,6 +104,18 @@ async function main() {
     let urls: string[];
     if (preferences.searchType === 'trending') {
         urls = await yomen.getTrendingVideos(); // You'll need to implement this method
+    }  else if (preferences.searchType === 'csv') {
+        const csvContent = fs.readFileSync(preferences.csvPath, 'utf-8');
+        const keywords = csvContent.split('\n')
+            .map(line => line.trim())
+            .filter(line => line.length > 0);
+        
+        urls = [];
+        for (const keyword of keywords) {
+            Logger.info(`Searching for keyword: ${keyword}`);
+            const keywordUrls = await yomen.searchKeyword(keyword, preferences.sortBy);
+            urls.push(...keywordUrls);
+        }
     } else {
         Logger.info(`Searching for keyword: ${preferences.keyword}`);
         urls = await yomen.searchKeyword(preferences.keyword, preferences.sortBy);
@@ -98,16 +123,12 @@ async function main() {
 
     for (const url of urls) {
         Logger.info(`Navigating to video: ${url}`);
-        console.log(preferences)
         if (preferences.commentType === 'ai') {
             await yomen.goToVideo(url, 'ai');
-        
         } else if (preferences.commentType === 'copy') {
             await yomen.goToVideo(url, 'copy');
-        } 
-        else if (preferences.commentType === 'manual' && preferences.manualCommentType === 'csv') {
+        } else if (preferences.commentType === 'manual' && preferences.manualCommentType === 'csv') {
             await yomen.goToVideo(url, 'csv');
-        
         } else if(preferences.commentType === 'manual' && preferences.manualCommentType === 'direct') {
             await yomen.goToVideo(url, 'direct', preferences.comment);
         }
@@ -117,7 +138,7 @@ async function main() {
 
     Logger.info('Process completed');
 }
- 
+
 async function init() {
     initialize();
     const zipFilePath = './bin.zip';
@@ -141,8 +162,9 @@ async function init() {
         await main();  // Proceed to the main process after ensuring drivers are ready
     }
 }
+
 init();
+
 function generateAIComment(url: string) {
     throw new Error('Function not implemented.');
 }
-
