@@ -1,11 +1,11 @@
-export default async function scrollToBottom(pages,attempts = 10, maxAttempts = 30, interval = 500) {
+export default async function scrollToBottom(pages, attempts = 0, maxAttempts = 300, interval = 200) {
 
-    await pages.evaluate(async () => {
+    await pages.evaluate(async (attemptsParam, maxAttemptsParam, intervalParam) => {
         await new Promise<void>((resolve) => {
             let lastScrollHeight = document.body.scrollHeight;
-            let attempts = 10;
-            const maxAttempts = 30;
-            const interval = 500; 
+            let attempts = attemptsParam;
+            const maxAttempts = maxAttemptsParam;
+            const interval = intervalParam; 
 
             const timer = setInterval(() => {
                 window.scrollBy(0, window.innerHeight); 
@@ -22,5 +22,5 @@ export default async function scrollToBottom(pages,attempts = 10, maxAttempts = 
                 }
             }, interval);
         });
-    });
+    }, attempts, maxAttempts, interval);
 }

@@ -74,8 +74,8 @@ export default class YOMEN {
   }
 
   async getTrendingVideos(): Promise<string[] | any> {
-   await this.page.goto("https://www.youtube.com/feed/trending");
-   Logger.info("Scrolling to the bottom of the search results page...");
+      await this.page.goto("https://www.youtube.com/feed/trending");
+      Logger.info("Scrolling to the bottom of the search results page...");
       await scrollToBottom(this.page);
 
       Logger.info("Waiting for video results to load...");
@@ -172,7 +172,7 @@ export default class YOMEN {
           break;
       }
    
-      await delay(5000);
+      // await delay(3000);
     } catch (e) {
       await CommentDB.create({
         username: getEnv("USERNAME"),
